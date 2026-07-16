@@ -35,5 +35,5 @@ COPY --from=builder /app/apps/api/dist ./apps/api/dist
 # Expose the API port
 EXPOSE 3001
 
-# Command to run the API
-CMD ["node", "apps/api/dist/main.js"]
+# Run migrations at runtime then start the server
+CMD ["sh", "-c", "npx prisma migrate deploy --schema=./packages/database/prisma/schema.prisma && node apps/api/dist/main.js"]
