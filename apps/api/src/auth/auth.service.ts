@@ -164,10 +164,10 @@ export class AuthService {
     const permissions = [
       ...new Set(
         user.user_roles.flatMap((ur) =>
-          ur.roles.role_permissions.map((rp) => rp.permissions.code),
+          ur.roles.role_permissions.map((rp) => rp.permissions.code as string),
         ),
       ),
-    ];
+    ] as string[];
 
     return {
       id: user.id,
