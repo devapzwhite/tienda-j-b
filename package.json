@@ -18,7 +18,6 @@
     "onlyBuiltDependencies": [
       "@prisma/engines",
       "@prisma/client",
-      "bcrypt",
       "prisma",
       "sharp",
       "unrs-resolver"
