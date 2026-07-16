@@ -31,9 +31,13 @@ COPY --from=builder /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/packages/database ./packages/database
 COPY --from=builder /app/apps/api/package.json ./apps/api/
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/apps/api/scripts ./apps/api/scripts
 
 # Expose the API port
 EXPOSE 3001
 
+# Run from apps/api so relative paths match
+WORKDIR /app/apps/api
+
 # Command to run the API
-CMD ["node", "apps/api/dist/main.js"]
+CMD ["sh", "scripts/start.sh"]
