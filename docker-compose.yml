@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tienda_j_b
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      # Docker network internal URL to postgres container
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/tienda_j_b?schema=public
+      - JWT_SECRET=tienda-jb-super-secret-jwt-key-change-in-production-2025
+      - JWT_EXPIRES_IN=15m
+      - REFRESH_TOKEN_EXPIRES_DAYS=7
+    depends_on:
+      - postgres
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # API URL must be known at build time for Next.js to bake in client-side
+        # Since client runs in browser, it needs the external URL (localhost:3001)
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NODE_ENV=production
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
