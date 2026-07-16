@@ -47,3 +47,4 @@ coverage/
 # Documentación y BD Locales
 docs/
 *.sql
+!packages/database/prisma/migrations/**/*.sql
