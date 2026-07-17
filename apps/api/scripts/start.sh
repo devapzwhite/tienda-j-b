@@ -6,7 +6,7 @@ echo "Waiting for database and running migrations..."
 RETRIES=10
 COUNT=0
 
-until npx prisma@7.8.0 migrate deploy \
+until npx prisma@~6.19.3 migrate deploy \
   --schema=../../packages/database/prisma/schema.prisma; do
   COUNT=$((COUNT + 1))
   if [ $COUNT -ge $RETRIES ]; then
