@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export default function Sidebar() {
+export default function Sidebar({ user }: { user: any }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -14,8 +14,11 @@ export default function Sidebar() {
     { name: 'Ventas', href: '/dashboard/ventas' },
     { name: 'Productos', href: '/dashboard/productos' },
     { name: 'Inventario', href: '/dashboard/inventario' },
-    { name: 'Usuarios', href: '/dashboard/usuarios' },
   ];
+
+  if (user?.roles?.includes('jefe') || user?.roles?.includes('admin')) {
+    navItems.push({ name: 'Usuarios', href: '/dashboard/usuarios' });
+  }
 
   return (
     <>
@@ -89,9 +92,11 @@ export default function Sidebar() {
         {/* User profile / Footer placeholder in the island */}
         <div className="relative p-4 mt-auto">
           <div className="bg-gradient-to-br from-pink-50/50 to-violet-50/50 p-4 rounded-2xl border border-pink-100/50 flex flex-col items-center justify-center text-center">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-400 to-violet-400 mb-2 shadow-inner" />
-            <p className="text-xs font-bold text-stone-700">Administrador</p>
-            <p className="text-[10px] text-stone-400">admin@tiendajb.com</p>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-white bg-gradient-to-tr from-pink-400 to-violet-400 mb-2 shadow-inner">
+              {user?.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+            <p className="text-xs font-bold text-stone-700 capitalize">{user?.roles?.[0] || 'Usuario'}</p>
+            <p className="text-[10px] text-stone-400 truncate max-w-[150px]" title={user?.email}>{user?.email || 'user@tiendajb.com'}</p>
           </div>
         </div>
       </aside>

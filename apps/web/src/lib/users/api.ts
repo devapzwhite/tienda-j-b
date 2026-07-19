@@ -61,7 +61,26 @@ export async function createUser(data: any) {
 
   return res.json();
 }
+export async function updateUserRoles(userId: string, roleIds: string[]) {
+  const token = getToken();
+  if (!token) throw new Error('No estás autenticado');
 
+  const res = await fetch(`${API_URL}/users/${userId}/roles`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ roleIds })
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Error al actualizar roles del usuario');
+  }
+
+  return res.json();
+}
 export async function toggleUserStatus(id: string, isActive: boolean) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001';
   const res = await fetch(`${API_URL}/users/${id}/status`, {

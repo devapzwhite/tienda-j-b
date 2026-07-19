@@ -20,31 +20,31 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   create(@Body() dto: CreateProductDto) {
     return this.productsService.create(dto);
   }
 
   @Get()
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   findAll() {
     return this.productsService.findAll();
   }
 
   @Get(':id')
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   update(@Param('id') id: string, @Body() dto: Partial<CreateProductDto>) {
     return this.productsService.update(id, dto);
   }
 
   @Delete(':id')
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id);
   }

@@ -52,3 +52,27 @@ export async function requireAuth() {
   }
   return token;
 }
+
+export async function getUserFromSession() {
+  const token = await getSessionToken();
+  if (!token) return null;
+  
+  try {
+    const payloadBase64 = token.split('.')[1];
+    if (!payloadBase64) return null;
+    
+    // Decode base64 URL safe
+    const normalizedBase64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = Buffer.from(normalizedBase64, 'base64').toString('utf-8');
+    
+    return JSON.parse(jsonPayload) as { 
+      sub: string; 
+      email: string;
+      name: string;
+      roles: string[];
+      permissions: string[];
+    };
+  } catch (err) {
+    return null;
+  }
+}

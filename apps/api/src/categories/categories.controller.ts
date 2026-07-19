@@ -10,13 +10,13 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Get()
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   findAll() {
     return this.categoriesService.findAll();
   }
 
   @Post()
-  @Roles('admin', 'jefe')
+  @Roles('admin', 'jefe', 'administrador')
   create(@Body() body: { name: string; description?: string }) {
     return this.categoriesService.create(body);
   }

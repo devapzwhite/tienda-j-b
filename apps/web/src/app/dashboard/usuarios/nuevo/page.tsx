@@ -8,6 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createUser, getRoles } from '@/lib/users/api';
 
+import { redirect } from 'next/navigation';
+import { getUserFromSession } from '@/lib/auth/session';
+
 const userSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
   email: z.string().email('Correo electrónico inválido'),
@@ -97,7 +100,7 @@ export default function NuevoUsuarioPage() {
             <input
               type="text"
               {...register('name')}
-              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all outline-none"
+              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all text-stone-900 placeholder-stone-400 outline-none"
               placeholder="Ej. Juan Pérez"
             />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
@@ -108,7 +111,7 @@ export default function NuevoUsuarioPage() {
             <input
               type="email"
               {...register('email')}
-              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all outline-none"
+              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all text-stone-900 placeholder-stone-400 outline-none"
               placeholder="juan@ejemplo.com"
             />
             {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
@@ -119,7 +122,7 @@ export default function NuevoUsuarioPage() {
             <input
               type="text"
               {...register('password')}
-              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all outline-none"
+              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all text-stone-900 placeholder-stone-400 outline-none"
               placeholder="Mínimo 6 caracteres"
             />
             {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}

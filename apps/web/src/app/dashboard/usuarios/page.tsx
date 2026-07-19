@@ -1,13 +1,18 @@
 import Link from 'next/link';
-import { getUsers } from '@/lib/users/api';
+import { redirect } from 'next/navigation';
+import { getUsers, getRoles } from '@/lib/users/api';
 import UsersClientList from './UsersClientList';
+import { getUserFromSession } from '@/lib/auth/session';
 
 export const metadata = {
   title: 'Gestión de Usuarios | J&B Antonella',
 };
 
 export default async function UsuariosPage() {
-  const users = await getUsers();
+  const [users, roles] = await Promise.all([
+    getUsers(),
+    getRoles()
+  ]);
 
   return (
     <div className="space-y-8 pb-12">
@@ -21,7 +26,9 @@ export default async function UsuariosPage() {
         </Link>
       </div>
 
-      <UsersClientList initialUsers={users} />
+      <div className="mt-8">
+        <UsersClientList initialUsers={users} availableRoles={roles} />
+      </div>
     </div>
   );
 }

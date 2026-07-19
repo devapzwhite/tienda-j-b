@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { toggleUserStatus, changeUserPassword } from '@/lib/users/api';
+import { toggleUserStatus, changeUserPassword, updateUserRoles } from '@/lib/users/api';
 
-export default function UsersClientList({ initialUsers }: { initialUsers: any[] }) {
+export default function UsersClientList({ initialUsers, availableRoles = [] }: { initialUsers: any[], availableRoles?: any[] }) {
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,6 +17,14 @@ export default function UsersClientList({ initialUsers }: { initialUsers: any[] 
   });
   const [newPassword, setNewPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  const [rolesModal, setRolesModal] = useState<{ isOpen: boolean; userId: string; userName: string; selectedRoles: string[] }>({
+    isOpen: false,
+    userId: '',
+    userName: '',
+    selectedRoles: []
+  });
+  const [rolesError, setRolesError] = useState('');
 
   const handleToggleStatus = async (user: any) => {
     try {
@@ -52,6 +60,49 @@ export default function UsersClientList({ initialUsers }: { initialUsers: any[] 
       alert('Contraseña actualizada con éxito');
     } catch (error: any) {
       setPasswordError(error.message || 'Error al cambiar contraseña');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRoleToggle = (roleId: string) => {
+    const current = new Set(rolesModal.selectedRoles);
+    if (current.has(roleId)) {
+      current.delete(roleId);
+    } else {
+      current.add(roleId);
+    }
+    setRolesModal({ ...rolesModal, selectedRoles: Array.from(current) });
+  };
+
+  const handleSaveRoles = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rolesModal.selectedRoles.length === 0) {
+      setRolesError('Debes seleccionar al menos un rol');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      setRolesError('');
+      await updateUserRoles(rolesModal.userId, rolesModal.selectedRoles);
+      
+      // Update local state
+      setUsers(users.map(u => {
+        if (u.id === rolesModal.userId) {
+          const newRoles = rolesModal.selectedRoles.map(rid => {
+            const roleObj = availableRoles.find(r => r.id === rid);
+            return { roles: roleObj };
+          });
+          return { ...u, user_roles: newRoles };
+        }
+        return u;
+      }));
+      
+      setRolesModal({ isOpen: false, userId: '', userName: '', selectedRoles: [] });
+      alert('Roles actualizados con éxito');
+    } catch (error: any) {
+      setRolesError(error.message || 'Error al actualizar roles');
     } finally {
       setIsSubmitting(false);
     }
@@ -130,6 +181,13 @@ export default function UsersClientList({ initialUsers }: { initialUsers: any[] 
                   Cambiar Clave
                 </button>
               </div>
+              <button 
+                onClick={() => setRolesModal({ isOpen: true, userId: user.id, userName: user.full_name, selectedRoles: user.user_roles?.map((r:any) => r.roles.id) || [] })}
+                disabled={isSubmitting}
+                className="w-full text-xs font-bold py-2 rounded-lg transition-colors border border-stone-200 text-stone-600 hover:bg-stone-50 disabled:opacity-50 mt-2"
+              >
+                Editar Roles
+              </button>
             </div>
           </div>
         ))}
@@ -156,7 +214,7 @@ export default function UsersClientList({ initialUsers }: { initialUsers: any[] 
                     type="text"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 text-sm outline-none"
+                    className="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 text-sm text-stone-900 bg-white placeholder-stone-300 outline-none"
                     placeholder="Mínimo 6 caracteres"
                     autoFocus
                   />
@@ -173,6 +231,62 @@ export default function UsersClientList({ initialUsers }: { initialUsers: any[] 
                   <button
                     type="submit"
                     disabled={isSubmitting || newPassword.length < 6}
+                    className="flex-1 px-4 py-2 text-sm font-bold text-white bg-pink-600 hover:bg-pink-500 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Guardando...' : 'Guardar'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Roles Modal */}
+      {rolesModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-stone-900 mb-1">Editar Roles</h3>
+              <p className="text-sm text-stone-500 mb-6">Para {rolesModal.userName}</p>
+              
+              <form onSubmit={handleSaveRoles}>
+                {rolesError && (
+                  <div className="mb-4 p-3 bg-red-50 text-red-600 text-xs rounded-lg border border-red-100">
+                    {rolesError}
+                  </div>
+                )}
+                
+                <div className="space-y-3">
+                  {availableRoles.map(role => {
+                    const isSelected = rolesModal.selectedRoles.includes(role.id);
+                    return (
+                      <div 
+                        key={role.id}
+                        onClick={() => handleRoleToggle(role.id)}
+                        className={`cursor-pointer border p-3 rounded-xl flex items-center justify-between transition-all ${isSelected ? 'border-pink-500 bg-pink-50' : 'border-stone-200 bg-white hover:border-stone-300'}`}
+                      >
+                        <p className={`font-bold text-sm ${isSelected ? 'text-pink-700' : 'text-stone-700'}`}>{role.name}</p>
+                        <div className={`w-4 h-4 rounded border flex items-center justify-center ${isSelected ? 'bg-pink-500 border-pink-500 text-white' : 'border-stone-300'}`}>
+                          {isSelected && (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-8 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRolesModal({ isOpen: false, userId: '', userName: '', selectedRoles: [] })}
+                    className="flex-1 px-4 py-2 text-sm font-bold text-stone-600 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || rolesModal.selectedRoles.length === 0}
                     className="flex-1 px-4 py-2 text-sm font-bold text-white bg-pink-600 hover:bg-pink-500 rounded-lg transition-colors disabled:opacity-50"
                   >
                     {isSubmitting ? 'Guardando...' : 'Guardar'}
