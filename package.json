@@ -7,7 +7,7 @@
     "dev": "pnpm --parallel -r run dev",
     "build": "pnpm -r build",
     "postinstall": "pnpm run db:generate",
-    "db:generate": "pnpm --filter database exec prisma generate",
+    "db:generate": "npx cross-env DATABASE_URL=postgresql://dummy@localhost/db pnpm --filter database exec prisma generate",
     "db:pull": "pnpm --filter database exec prisma db pull",
     "db:migrate": "pnpm --filter database exec prisma migrate dev"
   },
