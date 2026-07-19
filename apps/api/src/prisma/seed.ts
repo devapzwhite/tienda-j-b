@@ -146,6 +146,52 @@ async function seedAdminUser() {
   console.log(`  ✓ Admin user: admin@tienda.com / Admin123!`);
 }
 
+async function seedStoreUsers() {
+  console.log('  → Seeding store users...');
+  const milePassword = await bcrypt.hash('mileee1223@', 10);
+  const hooverPassword = await bcrypt.hash('hoover1223@', 10);
+  
+  const adminRole = await prisma.roles.findUniqueOrThrow({
+    where: { code: 'administrador' },
+  });
+
+  // Milenka
+  const mile = await prisma.users.upsert({
+    where: { email: 'milenkasinka38@gmail.com' },
+    update: {},
+    create: {
+      email: 'milenkasinka38@gmail.com',
+      password_hash: milePassword,
+      full_name: 'Milenka Sinka',
+    },
+  });
+
+  await prisma.user_roles.upsert({
+    where: { user_id_role_id: { user_id: mile.id, role_id: adminRole.id } },
+    update: {},
+    create: { user_id: mile.id, role_id: adminRole.id },
+  });
+
+  // Hoover
+  const hoover = await prisma.users.upsert({
+    where: { email: 'hoover.apaza@gmail.com' },
+    update: {},
+    create: {
+      email: 'hoover.apaza@gmail.com',
+      password_hash: hooverPassword,
+      full_name: 'Hoover Apaza',
+    },
+  });
+
+  await prisma.user_roles.upsert({
+    where: { user_id_role_id: { user_id: hoover.id, role_id: adminRole.id } },
+    update: {},
+    create: { user_id: hoover.id, role_id: adminRole.id },
+  });
+
+  console.log(`  ✓ Store users seeded`);
+}
+
 async function main() {
   console.log('🌱 Starting database seed...\n');
 
@@ -153,6 +199,7 @@ async function main() {
   await seedRoles();
   await seedRolePermissions();
   await seedAdminUser();
+  await seedStoreUsers();
 
   console.log('\n✅ Seed completed successfully!');
 }
