@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "npx prisma@~6.19.3 generate --schema=../../packages/database/prisma/schema.prisma",
+    "prebuild": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "sh scripts/start.sh",
