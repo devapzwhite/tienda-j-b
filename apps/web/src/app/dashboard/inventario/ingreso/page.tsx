@@ -4,7 +4,7 @@ import { getProducts } from '@/lib/products/api';
 import { InventoryForm } from './inventory-form';
 
 export const metadata = {
-  title: 'Ingreso de Mercadería | J&B Bijouteria',
+  title: 'Ingreso de Mercadería | J&B Antonella',
 };
 
 export default async function IngresoInventarioPage() {

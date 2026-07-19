@@ -14,6 +14,7 @@ export default function Sidebar() {
     { name: 'Ventas', href: '/dashboard/ventas' },
     { name: 'Productos', href: '/dashboard/productos' },
     { name: 'Inventario', href: '/dashboard/inventario' },
+    { name: 'Usuarios', href: '/dashboard/usuarios' },
   ];
 
   return (
@@ -61,7 +62,7 @@ export default function Sidebar() {
 
         <div className="relative h-24 flex items-center justify-center px-6 border-b border-stone-100/50">
           <span className="text-xl font-extrabold bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent tracking-widest uppercase text-center" style={{ fontFamily: 'var(--font-geist-sans), serif' }}>
-            J&amp;B<br/><span className="text-sm font-semibold tracking-normal text-stone-400">Bijouteria</span>
+            J&amp;B<br/><span className="text-sm font-semibold tracking-normal text-stone-400">Antonella</span>
           </span>
         </div>
         

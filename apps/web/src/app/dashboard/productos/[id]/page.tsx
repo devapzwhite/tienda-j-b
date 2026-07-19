@@ -3,7 +3,7 @@ import { getProduct } from '@/lib/products/api';
 import { notFound } from 'next/navigation';
 
 export const metadata = {
-  title: 'Detalle de Producto | J&B Bijouteria',
+  title: 'Detalle de Producto | J&B Antonella',
 };
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {

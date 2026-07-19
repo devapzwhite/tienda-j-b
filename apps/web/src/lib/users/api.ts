@@ -61,3 +61,35 @@ export async function createUser(data: any) {
 
   return res.json();
 }
+
+export async function toggleUserStatus(id: string, isActive: boolean) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001';
+  const res = await fetch(`${API_URL}/users/${id}/status`, {
+    method: 'PATCH',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ isActive }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Error al actualizar estado del usuario');
+  }
+
+  return res.json();
+}
+
+export async function changeUserPassword(id: string, newPassword: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001';
+  const res = await fetch(`${API_URL}/users/${id}/password`, {
+    method: 'PATCH',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify({ newPassword }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Error al cambiar contraseña');
+  }
+
+  return res.json();
+}

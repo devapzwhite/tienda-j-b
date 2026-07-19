@@ -64,7 +64,7 @@ function LoginFormContent() {
     <div className="flex flex-col gap-6">
       <div className="text-center sm:text-left">
         <h1 className="text-3xl font-bold tracking-tight text-stone-900 mb-2" style={{ fontFamily: 'var(--font-geist-sans), serif' }}>
-          J&B Bijouteria
+          J&B Antonella
         </h1>
         <p className="text-sm text-stone-500">
           Ingresa tus credenciales para acceder al sistema

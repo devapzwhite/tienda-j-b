@@ -3,7 +3,7 @@ import { getCategories, getBrands, getColors } from '@/lib/catalog/api';
 import { ProductForm } from './product-form';
 
 export const metadata = {
-  title: 'Registrar Producto | J&B Bijouteria',
+  title: 'Registrar Producto | J&B Antonella',
 };
 
 export default async function NuevoProductoPage() {

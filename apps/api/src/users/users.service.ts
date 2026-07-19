@@ -63,4 +63,23 @@ export class UsersService {
       },
     });
   }
+
+  async toggleStatus(id: string, isActive: boolean) {
+    const user = await this.prisma.users.update({
+      where: { id },
+      data: { is_active: isActive },
+    });
+    const { password_hash: _, ...result } = user;
+    return result;
+  }
+
+  async changePassword(id: string, newPassword: string) {
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    const user = await this.prisma.users.update({
+      where: { id },
+      data: { password_hash: passwordHash },
+    });
+    const { password_hash: _, ...result } = user;
+    return result;
+  }
 }

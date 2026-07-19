@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getProducts } from '@/lib/products/api';
 
 export const metadata = {
-  title: 'Productos | J&B Bijouteria',
+  title: 'Productos | J&B Antonella',
 };
 
 export default async function ProductosPage() {

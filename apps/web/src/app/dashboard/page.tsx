@@ -41,7 +41,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-stone-900">Dashboard</h1>
           <p className="text-sm text-stone-500 mt-1">
-            Bienvenido al panel de administración de J&B Bijouteria.
+            Bienvenido al panel de administración de J&B Antonella.
           </p>
         </div>
         <button
