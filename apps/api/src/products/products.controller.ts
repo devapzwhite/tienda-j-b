@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service.js';
@@ -27,8 +28,8 @@ export class ProductsController {
 
   @Get()
   @Roles('admin', 'jefe', 'administrador')
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query('search') search?: string) {
+    return this.productsService.findAll(search);
   }
 
   @Get(':id')

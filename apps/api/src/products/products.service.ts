@@ -131,8 +131,9 @@ export class ProductsService {
     });
   }
 
-  async findAll() {
+  async findAll(search?: string) {
     return this.prisma.products.findMany({
+      where: search ? { name: { contains: search, mode: 'insensitive' } } : undefined,
       include: {
         categories: { select: { id: true, name: true } },
         brands: { select: { id: true, name: true } },

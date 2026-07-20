@@ -14,4 +14,9 @@ export class ReceiveInventoryDto {
   @IsNumber()
   @Min(1)
   quantityUnits: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  unitCost?: number;
 }

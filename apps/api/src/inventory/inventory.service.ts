@@ -7,7 +7,7 @@ export class InventoryService {
   constructor(private readonly prisma: PrismaService) {}
 
   async receive(dto: ReceiveInventoryDto) {
-    const { locationId, productId, variantId, quantityUnits } = dto;
+    const { locationId, productId, variantId, quantityUnits, unitCost } = dto;
 
     // 1. Find the corresponding stock unit
     const stockUnit = await this.prisma.product_stock_units.findFirst({
@@ -31,6 +31,7 @@ export class InventoryService {
           location_id: locationId,
           movement_type: 'entry',
           quantity_units: quantityUnits,
+          unit_cost: unitCost,
           notes: 'Ingreso manual por variante',
         },
       });

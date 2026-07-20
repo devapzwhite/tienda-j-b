@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { getLocations } from '@/lib/inventory/api';
-import { getProducts } from '@/lib/products/api';
 import { InventoryForm } from './inventory-form';
 
 export const metadata = {
@@ -8,7 +7,7 @@ export const metadata = {
 };
 
 export default async function IngresoInventarioPage() {
-  const [locations, products] = await Promise.all([getLocations(), getProducts()]);
+  const locations = await getLocations();
 
   return (
     <div className="space-y-6 max-w-4xl pb-12">
@@ -28,7 +27,7 @@ export default async function IngresoInventarioPage() {
         </div>
       </div>
 
-      <InventoryForm locations={locations} products={products} />
+      <InventoryForm locations={locations} />
     </div>
   );
 }

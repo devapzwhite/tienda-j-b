@@ -3,20 +3,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { receiveInventory } from '@/lib/inventory/api';
+import { ProductAutocomplete } from '@/components/ui/ProductAutocomplete';
 
-export function InventoryForm({ locations, products }: { locations: any[]; products: any[] }) {
+export function InventoryForm({ locations }: { locations: any[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const [locationId, setLocationId] = useState('');
-  const [productId, setProductId] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [variantId, setVariantId] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [unitCost, setUnitCost] = useState('');
 
-  const selectedProduct = products.find((p) => p.id === productId);
-  
   let variants: any[] = [];
   if (selectedProduct?.product_presentations) {
     const varMap = new Map();
@@ -39,20 +39,23 @@ export function InventoryForm({ locations, products }: { locations: any[]; produ
     setSuccess(null);
 
     try {
-      if (!locationId || !productId || !quantity) {
+      if (!locationId || !selectedProduct || !quantity) {
         throw new Error('Completa todos los campos obligatorios');
       }
 
       await receiveInventory({
         locationId,
-        productId,
+        productId: selectedProduct.id,
         variantId: variantId || undefined,
         quantityUnits: Number(quantity),
+        unitCost: unitCost ? Number(unitCost) : undefined,
       });
 
       setSuccess('Ingreso registrado correctamente');
       setVariantId('');
       setQuantity('');
+      setUnitCost('');
+      setSelectedProduct(null);
       router.refresh();
     } catch (err: any) {
       setError(err.message);
@@ -83,12 +86,13 @@ export function InventoryForm({ locations, products }: { locations: any[]; produ
 
         <div className="sm:col-span-2">
           <label className={labelClass}>Producto</label>
-          <select required value={productId} onChange={(e) => { setProductId(e.target.value); setVariantId(''); }} className={inputClass}>
-            <option value="">Selecciona un producto...</option>
-            {products.map((prod) => (
-              <option key={prod.id} value={prod.id}>{prod.name}</option>
-            ))}
-          </select>
+          <ProductAutocomplete 
+            selectedProduct={selectedProduct} 
+            onSelect={(product) => {
+              setSelectedProduct(product);
+              setVariantId('');
+            }} 
+          />
         </div>
 
         {variants.length > 0 && (
@@ -103,9 +107,14 @@ export function InventoryForm({ locations, products }: { locations: any[]; produ
           </div>
         )}
 
-        <div className="sm:col-span-2">
+        <div>
           <label className={labelClass}>Cantidad Ingresada (Unidades)</label>
           <input type="number" required min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} className={inputClass} placeholder="Ej. 50" />
+        </div>
+
+        <div>
+          <label className={labelClass}>Precio de Compra (Opcional)</label>
+          <input type="number" step="0.01" min="0" value={unitCost} onChange={(e) => setUnitCost(e.target.value)} className={inputClass} placeholder="Ej. 15.50" />
         </div>
       </div>
 

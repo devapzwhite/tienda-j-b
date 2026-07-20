@@ -31,6 +31,7 @@ export async function receiveInventory(data: {
   productId: string;
   variantId?: string;
   quantityUnits: number;
+  unitCost?: number;
 }) {
   const res = await fetch(`${API_URL}/inventory/receive`, {
     method: 'POST',

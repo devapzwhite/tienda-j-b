@@ -18,10 +18,15 @@ async function getAuthHeaders() {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001';
 
-export async function getProducts() {
-  const res = await fetch(`${API_URL}/products`, {
+export async function getProducts(search?: string) {
+  const url = search 
+    ? `${API_URL}/products?search=${encodeURIComponent(search)}` 
+    : `${API_URL}/products`;
+
+  const res = await fetch(url, {
     headers: await getAuthHeaders(),
-    next: { tags: ['products'] },
+    next: search ? undefined : { tags: ['products'] },
+    cache: search ? 'no-store' : undefined,
   });
 
   if (!res.ok) {
