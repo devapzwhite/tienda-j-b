@@ -14,9 +14,9 @@ async function bootstrap() {
   // Global validation pipe: strips unknown fields and transforms types
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,        // strips properties not in DTO
+      whitelist: true, // strips properties not in DTO
       forbidNonWhitelisted: true, // throws on extra properties
-      transform: true,        // automatically transform payloads to DTO instances
+      transform: true, // automatically transform payloads to DTO instances
     }),
   );
 

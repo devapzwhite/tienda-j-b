@@ -97,8 +97,12 @@ async function seedRoles() {
 
 async function seedRolePermissions() {
   console.log('  → Linking role permissions...');
-  for (const [roleName, permissionActions] of Object.entries(ROLE_PERMISSIONS)) {
-    const role = await prisma.roles.findUniqueOrThrow({ where: { code: roleName } });
+  for (const [roleName, permissionActions] of Object.entries(
+    ROLE_PERMISSIONS,
+  )) {
+    const role = await prisma.roles.findUniqueOrThrow({
+      where: { code: roleName },
+    });
 
     for (const action of permissionActions) {
       const permission = await prisma.permissions.findUniqueOrThrow({
@@ -150,7 +154,7 @@ async function seedStoreUsers() {
   console.log('  → Seeding store users...');
   const milePassword = await bcrypt.hash('mileee1223@', 10);
   const hooverPassword = await bcrypt.hash('hoover1223@', 10);
-  
+
   const adminRole = await prisma.roles.findUniqueOrThrow({
     where: { code: 'administrador' },
   });

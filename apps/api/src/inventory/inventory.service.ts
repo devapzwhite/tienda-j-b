@@ -1,6 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ReceiveInventoryDto } from './dto/receive-inventory.dto.js';
+import { CreateLocationDto } from './dto/create-location.dto.js';
 
 @Injectable()
 export class InventoryService {
@@ -19,7 +24,9 @@ export class InventoryService {
     });
 
     if (!stockUnit) {
-      throw new NotFoundException('No se encontró la unidad de stock para este producto/variante');
+      throw new NotFoundException(
+        'No se encontró la unidad de stock para este producto/variante',
+      );
     }
 
     // 2. Perform transaction: Create movement and update stock
@@ -88,18 +95,37 @@ export class InventoryService {
           include: {
             inventory_stock: {
               include: {
-                locations: { select: { name: true, code: true } }
-              }
+                locations: { select: { name: true, code: true } },
+              },
             },
             product_variants: {
               include: {
-                colors: { select: { name: true, code: true } }
-              }
-            }
-          }
-        }
+                colors: { select: { name: true, code: true } },
+              },
+            },
+          },
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async createLocation(dto: CreateLocationDto) {
+    const existing = await this.prisma.locations.findUnique({
+      where: { code: dto.code },
+    });
+
+    if (existing) {
+      throw new ConflictException('Ya existe una ubicación con este código');
+    }
+
+    return this.prisma.locations.create({
+      data: {
+        code: dto.code,
+        name: dto.name,
+        type: dto.type,
+        address: dto.address,
+      },
     });
   }
 }

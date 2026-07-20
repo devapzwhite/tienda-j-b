@@ -31,7 +31,7 @@ export class ProductsService {
       for (const p of dto.presentations) {
         // Fallback barcode if not provided
         const presBarcode = p.barcode || randomUUID();
-        
+
         const presentation = await tx.product_presentations.create({
           data: {
             product_id: product.id,
@@ -54,7 +54,9 @@ export class ProductsService {
                 data: {
                   product_id: product.id,
                   color_id: v.colorId,
-                  internal_code: v.internalCode || `${product.id.substring(0, 8)}-${v.colorId.substring(0, 8)}`,
+                  internal_code:
+                    v.internalCode ||
+                    `${product.id.substring(0, 8)}-${v.colorId.substring(0, 8)}`,
                 },
               });
             }
@@ -74,8 +76,12 @@ export class ProductsService {
       }
 
       // 4. Create Stock Units
-      const createdVariants = await tx.product_variants.findMany({ where: { product_id: product.id } });
-      const createdPresentations = await tx.product_presentations.findMany({ where: { product_id: product.id } });
+      const createdVariants = await tx.product_variants.findMany({
+        where: { product_id: product.id },
+      });
+      const createdPresentations = await tx.product_presentations.findMany({
+        where: { product_id: product.id },
+      });
       const stockUnits: any[] = [];
 
       if (createdVariants.length > 0) {
@@ -86,7 +92,7 @@ export class ProductsService {
               variant_id: variant.id,
               unit_code: 'UNIDAD',
               unit_name: 'Unidad',
-            }
+            },
           });
           stockUnits.push(su);
         }
@@ -96,7 +102,7 @@ export class ProductsService {
             product_id: product.id,
             unit_code: 'UNIDAD',
             unit_name: 'Unidad',
-          }
+          },
         });
         stockUnits.push(su);
       }
@@ -107,12 +113,17 @@ export class ProductsService {
           // If variants exist, ideally we only link the stock unit of the variant that is in this presentation.
           // Let's check if this presentation has this variant
           if (su.variant_id) {
-            const hasVariant = await tx.product_presentation_variants.findFirst({
-              where: { presentation_id: presentation.id, variant_id: su.variant_id }
-            });
+            const hasVariant = await tx.product_presentation_variants.findFirst(
+              {
+                where: {
+                  presentation_id: presentation.id,
+                  variant_id: su.variant_id,
+                },
+              },
+            );
             if (!hasVariant) continue;
           }
-          
+
           await tx.presentation_conversions.create({
             data: {
               presentation_id: presentation.id,
@@ -120,8 +131,8 @@ export class ProductsService {
               // Simple heuristic: if name contains number, use it. But for now, we assume 1.
               // Users will need to manually adjust conversions for boxes.
               // The frontend doesn't send units_per_presentation, so default to 1.
-              units_per_presentation: 1, 
-            }
+              units_per_presentation: 1,
+            },
           });
         }
       }
@@ -133,7 +144,9 @@ export class ProductsService {
 
   async findAll(search?: string) {
     return this.prisma.products.findMany({
-      where: search ? { name: { contains: search, mode: 'insensitive' } } : undefined,
+      where: search
+        ? { name: { contains: search, mode: 'insensitive' } }
+        : undefined,
       include: {
         categories: { select: { id: true, name: true } },
         brands: { select: { id: true, name: true } },

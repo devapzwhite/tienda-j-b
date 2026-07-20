@@ -1,4 +1,9 @@
-import { Injectable, ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcryptjs';
@@ -23,15 +28,14 @@ export class UsersService {
         email: createUserDto.email,
         password_hash: passwordHash,
         full_name: createUserDto.name,
-        user_roles: { create: createUserDto.roleIds.map((roleId) => ({
+        user_roles: {
+          create: createUserDto.roleIds.map((roleId) => ({
             roles: { connect: { id: roleId } },
           })),
         },
       },
       include: {
-        user_roles: { include: { roles: true,
-          },
-        },
+        user_roles: { include: { roles: true } },
       },
     });
 
@@ -43,9 +47,7 @@ export class UsersService {
   async findAll() {
     const users = await this.prisma.users.findMany({
       include: {
-        user_roles: { include: { roles: true,
-          },
-        },
+        user_roles: { include: { roles: true } },
       },
     });
 
@@ -74,18 +76,20 @@ export class UsersService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    const targetRoles = targetUser.user_roles.map(ur => ur.roles.code);
+    const targetRoles = targetUser.user_roles.map((ur) => ur.roles.code);
     const isTargetJefe = targetRoles.includes('jefe');
     const isCurrentUserJefe = currentUser.roles.includes('jefe');
 
     if (isTargetJefe && !isCurrentUserJefe) {
-      throw new ForbiddenException('No tienes permisos para modificar a un usuario de nivel Jefe');
+      throw new ForbiddenException(
+        'No tienes permisos para modificar a un usuario de nivel Jefe',
+      );
     }
   }
 
   async toggleStatus(id: string, isActive: boolean, currentUser: any) {
     await this.checkHierarchy(id, currentUser);
-    
+
     const user = await this.prisma.users.update({
       where: { id },
       data: { is_active: isActive },
@@ -96,7 +100,7 @@ export class UsersService {
 
   async changePassword(id: string, newPassword: string, currentUser: any) {
     await this.checkHierarchy(id, currentUser);
-    
+
     const passwordHash = await bcrypt.hash(newPassword, 10);
     const user = await this.prisma.users.update({
       where: { id },
@@ -108,15 +112,17 @@ export class UsersService {
 
   async updateRoles(id: string, roleIds: string[], currentUser: any) {
     await this.checkHierarchy(id, currentUser);
-    
+
     // Prevent self-demotion from 'jefe'
     if (id === currentUser.id && currentUser.roles.includes('jefe')) {
       const newRoles = await this.prisma.roles.findMany({
-        where: { id: { in: roleIds } }
+        where: { id: { in: roleIds } },
       });
-      const hasJefe = newRoles.some(r => r.code === 'jefe');
+      const hasJefe = newRoles.some((r) => r.code === 'jefe');
       if (!hasJefe) {
-        throw new ForbiddenException('No puedes quitarte el rol de Jefe a ti mismo por seguridad');
+        throw new ForbiddenException(
+          'No puedes quitarte el rol de Jefe a ti mismo por seguridad',
+        );
       }
     }
 
@@ -126,16 +132,16 @@ export class UsersService {
       data: {
         user_roles: {
           deleteMany: {},
-          create: roleIds.map(roleId => ({
-            role_id: roleId
-          }))
-        }
+          create: roleIds.map((roleId) => ({
+            role_id: roleId,
+          })),
+        },
       },
       include: {
         user_roles: {
-          include: { roles: true }
-        }
-      }
+          include: { roles: true },
+        },
+      },
     });
 
     const { password_hash: _, ...result } = user;

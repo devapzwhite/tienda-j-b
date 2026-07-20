@@ -9,10 +9,7 @@ import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { LoginDto } from './dto/login.dto.js';
-import {
-  JwtPayload,
-  AuthenticatedUser,
-} from './interfaces/auth.interfaces.js';
+import { JwtPayload, AuthenticatedUser } from './interfaces/auth.interfaces.js';
 
 /**
  * AuthService handles all authentication business logic.
@@ -43,9 +40,11 @@ export class AuthService {
 
   // ─── Public API ──────────────────────────────────────────────────────────────
 
-  async login(
-    dto: LoginDto,
-  ): Promise<{ accessToken: string; refresh_token: string; user: AuthenticatedUser }> {
+  async login(dto: LoginDto): Promise<{
+    accessToken: string;
+    refresh_token: string;
+    user: AuthenticatedUser;
+  }> {
     const user = await this.findActiveUserByEmail(dto.email);
     await this.verifyPassword(dto.password, user.password_hash);
 
@@ -53,7 +52,11 @@ export class AuthService {
     const accessToken = this.generateAccessToken(authenticatedUser);
     const refreshToken = await this.createSession(user.id);
 
-    return { accessToken, refresh_token: refreshToken, user: authenticatedUser };
+    return {
+      accessToken,
+      refresh_token: refreshToken,
+      user: authenticatedUser,
+    };
   }
 
   async refresh(
@@ -89,8 +92,14 @@ export class AuthService {
     const user = await this.prisma.users.findUnique({
       where: { email },
       include: {
-        user_roles: { include: { roles: { include: { role_permissions: { include: { permissions: true } } } } } }
-      }
+        user_roles: {
+          include: {
+            roles: {
+              include: { role_permissions: { include: { permissions: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -104,8 +113,14 @@ export class AuthService {
     const user = await this.prisma.users.findUnique({
       where: { id },
       include: {
-        user_roles: { include: { roles: { include: { role_permissions: { include: { permissions: true } } } } } }
-      }
+        user_roles: {
+          include: {
+            roles: {
+              include: { role_permissions: { include: { permissions: true } } },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -126,12 +141,12 @@ export class AuthService {
   }
 
   private generateAccessToken(user: AuthenticatedUser): string {
-    const payload: JwtPayload = { 
-      sub: user.id, 
+    const payload: JwtPayload = {
+      sub: user.id,
       email: user.email,
       name: user.name,
       roles: user.roles,
-      permissions: user.permissions
+      permissions: user.permissions,
     };
     return this.jwtService.sign(payload);
   }
@@ -170,7 +185,7 @@ export class AuthService {
     const permissions = [
       ...new Set(
         user.user_roles.flatMap((ur) =>
-          ur.roles.role_permissions.map((rp) => rp.permissions.code as string),
+          ur.roles.role_permissions.map((rp) => rp.permissions.code),
         ),
       ),
     ] as string[];

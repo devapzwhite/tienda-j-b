@@ -18,6 +18,7 @@ export default function Sidebar({ user }: { user: any }) {
 
   if (user?.roles?.includes('jefe') || user?.roles?.includes('admin')) {
     navItems.push({ name: 'Usuarios', href: '/dashboard/usuarios' });
+    navItems.push({ name: 'Ubicaciones', href: '/dashboard/inventario/ubicaciones/nuevo' });
   }
 
   return (

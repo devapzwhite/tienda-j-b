@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, UseGuards, Patch, Param, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Patch,
+  Param,
+  Req,
+} from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateStatusDto } from './dto/update-status.dto.js';
@@ -33,19 +42,39 @@ export class UsersController {
 
   @Patch(':id/status')
   @Roles('admin', 'jefe')
-  toggleStatus(@Param('id') id: string, @Body() updateStatusDto: UpdateStatusDto, @Req() req: any) {
-    return this.usersService.toggleStatus(id, updateStatusDto.isActive, req.user);
+  toggleStatus(
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateStatusDto,
+    @Req() req: any,
+  ) {
+    return this.usersService.toggleStatus(
+      id,
+      updateStatusDto.isActive,
+      req.user,
+    );
   }
 
   @Patch(':id/password')
   @Roles('admin', 'jefe')
-  changePassword(@Param('id') id: string, @Body() changePasswordDto: ChangePasswordDto, @Req() req: any) {
-    return this.usersService.changePassword(id, changePasswordDto.newPassword, req.user);
+  changePassword(
+    @Param('id') id: string,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() req: any,
+  ) {
+    return this.usersService.changePassword(
+      id,
+      changePasswordDto.newPassword,
+      req.user,
+    );
   }
 
   @Patch(':id/roles')
   @Roles('admin', 'jefe')
-  updateRoles(@Param('id') id: string, @Body() updateRolesDto: UpdateRolesDto, @Req() req: any) {
+  updateRoles(
+    @Param('id') id: string,
+    @Body() updateRolesDto: UpdateRolesDto,
+    @Req() req: any,
+  ) {
     return this.usersService.updateRoles(id, updateRolesDto.roleIds, req.user);
   }
 }

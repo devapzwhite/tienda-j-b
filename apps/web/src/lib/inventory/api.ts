@@ -56,3 +56,21 @@ export async function getStock() {
   }
   return res.json();
 }
+
+export async function createLocation(data: {
+  code: string;
+  name: string;
+  type: string;
+  address?: string;
+}) {
+  const res = await fetch(`${API_URL}/inventory/locations`, {
+    method: 'POST',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Error al crear la ubicación');
+  }
+  return res.json();
+}
