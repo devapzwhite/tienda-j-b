@@ -25,7 +25,6 @@ export function UserForm({ roles }: { roles: any[] }) {
     try {
       await createUser(data);
       router.push('/dashboard/usuarios');
-      router.refresh();
     } catch (err: any) {
       setError(err.message);
       setLoading(false);

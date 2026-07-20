@@ -231,7 +231,6 @@ export function ProductForm({ categories: initialCategories, brands: initialBran
     try {
       await createProduct(data);
       router.push('/dashboard/productos');
-      router.refresh();
     } catch (err: any) {
       setError(err.message);
       setLoading(false);

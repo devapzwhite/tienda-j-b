@@ -63,7 +63,6 @@ export default function NuevoUsuarioPage() {
       setError('');
       await createUser(data);
       router.push('/dashboard/usuarios');
-      router.refresh();
     } catch (err: any) {
       setError(err.message || 'Error al crear usuario');
       setIsSubmitting(false);

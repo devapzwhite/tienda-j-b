@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { revalidateTag } from 'next/cache';
 
 async function getAuthHeaders() {
   const cookieStore = await cookies();
@@ -62,7 +63,9 @@ export async function createProduct(data: any) {
     throw new Error(error.message || 'Error al crear el producto');
   }
 
-  return res.json();
+  const responseData = await res.json();
+  revalidateTag('products');
+  return responseData;
 }
 
 export async function updateProduct(id: string, data: any) {
@@ -77,7 +80,9 @@ export async function updateProduct(id: string, data: any) {
     throw new Error(error.message || 'Error al actualizar el producto');
   }
 
-  return res.json();
+  const responseData = await res.json();
+  revalidateTag('products');
+  return responseData;
 }
 
 export async function deleteProduct(id: string) {
@@ -91,5 +96,7 @@ export async function deleteProduct(id: string) {
     throw new Error(error.message || 'Error al eliminar el producto');
   }
 
-  return res.json();
+  const responseData = await res.json();
+  revalidateTag('products');
+  return responseData;
 }
