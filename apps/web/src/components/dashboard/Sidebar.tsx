@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Sidebar({ user }: { user: any }) {
@@ -63,11 +64,15 @@ export default function Sidebar({ user }: { user: any }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-
         <div className="relative h-24 flex items-center justify-center px-6 border-b border-stone-100/50">
-          <span className="text-xl font-extrabold bg-gradient-to-r from-pink-500 to-violet-500 bg-clip-text text-transparent tracking-widest uppercase text-center" style={{ fontFamily: 'var(--font-geist-sans), serif' }}>
-            J&amp;B<br/><span className="text-sm font-semibold tracking-normal text-stone-400">Antonella</span>
-          </span>
+          <Image 
+            src="/logo_app_sf_sb.png" 
+            alt="J&B Antonella" 
+            width={160} 
+            height={80} 
+            className="w-auto h-14 object-contain"
+            priority
+          />
         </div>
         
         <nav className="relative p-4 space-y-2 flex-1 mt-4">
