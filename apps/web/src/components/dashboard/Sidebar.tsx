@@ -64,13 +64,13 @@ export default function Sidebar({ user }: { user: any }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <div className="relative h-24 flex items-center justify-center px-6 border-b border-stone-100/50">
+        <div className="relative h-24 flex items-center justify-center border-b border-stone-100/50">
           <Image 
             src="/logo_app_sf_sb.png" 
             alt="J&B Antonella" 
-            width={160} 
-            height={80} 
-            className="w-auto h-14 object-contain"
+            width={72} 
+            height={72} 
+            className="object-contain drop-shadow-sm"
             priority
           />
         </div>
