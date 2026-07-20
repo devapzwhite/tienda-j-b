@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { revalidateTag } from 'next/cache';
+import { updateTag } from 'next/cache';
 
 async function getAuthHeaders() {
   const cookieStore = await cookies();
@@ -64,7 +64,7 @@ export async function createProduct(data: any) {
   }
 
   const responseData = await res.json();
-  revalidateTag('products');
+  updateTag('products');
   return responseData;
 }
 
@@ -81,7 +81,7 @@ export async function updateProduct(id: string, data: any) {
   }
 
   const responseData = await res.json();
-  revalidateTag('products');
+  updateTag('products');
   return responseData;
 }
 
@@ -97,6 +97,6 @@ export async function deleteProduct(id: string) {
   }
 
   const responseData = await res.json();
-  revalidateTag('products');
+  updateTag('products');
   return responseData;
 }
