@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createProduct } from '@/lib/products/api';
-import { createCategory, createBrand } from '@/lib/catalog/api';
+import { createCategory, createBrand, createColor } from '@/lib/catalog/api';
 
 interface Variant {
   colorId: string;
@@ -117,10 +117,12 @@ export function ProductForm({ categories: initialCategories, brands: initialBran
   // Local mutable lists
   const [categories, setCategories] = useState<CatalogItem[]>(initialCategories);
   const [brands, setBrands] = useState<CatalogItem[]>(initialBrands);
+  const [localColors, setLocalColors] = useState<ColorItem[]>(colors);
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [selectedBrandId, setSelectedBrandId] = useState('');
   const [showCategoryPanel, setShowCategoryPanel] = useState(false);
   const [showBrandPanel, setShowBrandPanel] = useState(false);
+  const [activeColorVariant, setActiveColorVariant] = useState<{ pIndex: number; vIndex: number } | null>(null);
 
   // ── Presentation helpers ─────────────────────────────────────────────────
   const addPresentation = () =>
@@ -183,6 +185,15 @@ export function ProductForm({ categories: initialCategories, brands: initialBran
     const created = await createBrand({ name });
     setBrands((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
     setSelectedBrandId(created.id);
+  };
+
+  const handleCreateColor = async (name: string) => {
+    const created = await createColor({ name });
+    setLocalColors((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
+    if (activeColorVariant) {
+      updateVariant(activeColorVariant.pIndex, activeColorVariant.vIndex, 'colorId', created.id);
+      setActiveColorVariant(null);
+    }
   };
 
   // ── Submit ───────────────────────────────────────────────────────────────
@@ -436,8 +447,19 @@ export function ProductForm({ categories: initialCategories, brands: initialBran
                   <div className="space-y-3">
                     {p.variants.map((v, vIndex) => (
                       <div key={vIndex} className="flex flex-col sm:flex-row gap-3 items-end p-3 bg-white rounded-xl border border-stone-100">
-                        <div className="w-full sm:w-1/3">
-                          <label className="block text-[10px] uppercase font-bold text-stone-400 mb-1">Color</label>
+                        <div className="w-full sm:w-1/3 relative">
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="block text-[10px] uppercase font-bold text-stone-400">Color</label>
+                            {activeColorVariant?.pIndex !== pIndex || activeColorVariant?.vIndex !== vIndex ? (
+                              <button
+                                type="button"
+                                onClick={() => setActiveColorVariant({ pIndex, vIndex })}
+                                className="text-[10px] font-bold text-violet-600 hover:text-violet-800 transition-colors bg-violet-50 px-1.5 py-0.5 rounded"
+                              >
+                                + Nuevo
+                              </button>
+                            ) : null}
+                          </div>
                           <select
                             required
                             value={v.colorId}
@@ -445,10 +467,19 @@ export function ProductForm({ categories: initialCategories, brands: initialBran
                             className={inputClass}
                           >
                             <option value="">Selecciona...</option>
-                            {colors.map(c => (
+                            {localColors.map(c => (
                               <option key={c.id} value={c.id}>{c.name}</option>
                             ))}
                           </select>
+                          {activeColorVariant?.pIndex === pIndex && activeColorVariant?.vIndex === vIndex && (
+                            <div className="absolute top-full left-0 w-full z-10 mt-1">
+                              <InlineCreatorPanel
+                                label="Color"
+                                onClose={() => setActiveColorVariant(null)}
+                                onSave={handleCreateColor}
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="w-full sm:w-1/3">
                           <label className="block text-[10px] uppercase font-bold text-stone-400 mb-1">Precio (Opcional)</label>

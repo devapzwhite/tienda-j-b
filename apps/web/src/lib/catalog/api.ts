@@ -90,3 +90,18 @@ export async function createBrand(data: { name: string; description?: string }) 
   return res.json();
 }
 
+export async function createColor(data: { name: string; code?: string }) {
+  const res = await fetch(`${API_URL}/colors`, {
+    method: 'POST',
+    headers: await getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Error al crear el color');
+  }
+
+  return res.json();
+}
+
