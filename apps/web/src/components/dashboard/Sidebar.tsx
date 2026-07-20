@@ -109,8 +109,9 @@ export default function Sidebar({ user }: { user: any }) {
             <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-white bg-gradient-to-tr from-pink-400 to-violet-400 mb-2 shadow-inner">
               {user?.name?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <p className="text-xs font-bold text-stone-700 capitalize">{user?.roles?.[0] || 'Usuario'}</p>
-            <p className="text-[10px] text-stone-400 truncate max-w-[150px]" title={user?.email}>{user?.email || 'user@tiendajb.com'}</p>
+            <p className="text-sm font-extrabold text-stone-800 capitalize truncate max-w-[160px] leading-tight" title={user?.name}>{user?.name || 'Usuario'}</p>
+            <p className="text-[11px] font-bold text-pink-600 capitalize mt-0.5">{user?.roles?.[0] || 'Usuario'}</p>
+            <p className="text-[10px] text-stone-400 truncate max-w-[160px] mt-0.5" title={user?.email}>{user?.email || 'user@tiendajb.com'}</p>
           </div>
         </div>
       </aside>
