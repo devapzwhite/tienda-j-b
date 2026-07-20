@@ -47,7 +47,7 @@ export function LocationForm() {
   const labelClass = 'block text-sm font-semibold text-stone-700 mb-1.5';
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-3xl border border-stone-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] space-y-6">
+    <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-6 rounded-3xl border border-stone-100 shadow-[0_2px_10px_rgb(0,0,0,0.02)] space-y-5 sm:space-y-6">
       {error && <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm font-medium border border-red-100">{error}</div>}
       {success && <div className="bg-green-50 text-green-600 p-4 rounded-2xl text-sm font-medium border border-green-100">{success}</div>}
 

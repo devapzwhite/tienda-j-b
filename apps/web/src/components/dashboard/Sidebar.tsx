@@ -72,7 +72,20 @@ export default function Sidebar({ user }: { user: any }) {
         
         <nav className="relative p-4 space-y-2 flex-1 mt-4">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+            const isUbicaciones = item.href.includes('/ubicaciones');
+            const isInventario = item.href === '/dashboard/inventario';
+            
+            let isActive = false;
+            if (pathname === item.href) {
+              isActive = true;
+            } else if (item.href !== '/dashboard' && pathname.startsWith(item.href)) {
+              if (isInventario && pathname.includes('/ubicaciones')) {
+                isActive = false; // Don't highlight Inventario when in Ubicaciones
+              } else {
+                isActive = true;
+              }
+            }
+
             return (
               <Link
                 key={item.name}

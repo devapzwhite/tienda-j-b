@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function NuevaUbicacionPage() {
   return (
-    <div className="space-y-6 max-w-2xl pb-12">
-      <div className="flex items-center gap-3">
+    <div className="space-y-6 max-w-2xl pb-12 px-4 sm:px-6 md:px-8 lg:px-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <Link
           href="/dashboard/inventario"
           className="p-2 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
